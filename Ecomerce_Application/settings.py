@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 
+from dotenv import load_dotenv
+load_dotenv()
+import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,13 +24,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4^j&ofc(t#tjzt6ue=3_i7yxukb2hefp!(_v-%9*9pg-j37-s9'
+# Provide a safe default for local/dev if env var is missing
+SECRET_KEY = os.getenv('SECRET_KEY') or 'dev-insecure-secret-key-change-me'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', '1') == '1'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    os.getenv('ALLOWED_HOST', 'localhost'),
+    '127.0.0.1',
+]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
+# ]
 
 # Application definition
 
@@ -37,10 +51,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'UserAuthentication.apps.UserAuthenticationConfig',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework.authtoken',
+    'drf_spectacular',
+    'Product.apps.ProductConfig',
+    'Order.apps.OrderConfig',
+    'Payment.apps.PaymentConfig',
+    'Review.apps.ReviewConfig',
+    'Cart.apps.CartConfig',
+    'User.apps.UserConfig',
+    'djoser',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -66,7 +92,6 @@ TEMPLATES = [
         },
     },
 ]
-
 WSGI_APPLICATION = 'Ecomerce_Application.wsgi.application'
 
 
@@ -78,6 +103,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+        
 }
 
 
@@ -116,13 +142,57 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = [BASE_DIR / 'static']
-STATICFILES_DIRS = [BASE_DIR / 'staticfiles']
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
 MEDIA_URL = '/media/'
-MEDIA_ROOT = [BASE_DIR / 'media']
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Custom user model
+AUTH_USER_MODEL = 'User.User'
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+DJOSER = {
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    "LOGIN_FIELD": "email",
+    "USER_ID_FIELD": "id",
+    "SERIALIZERS": {
+        'user_create': "User.serializers.UserCreateSerializer",
+        "user": "User.serializers.UserSerializer",
+        "current_user": "User.serializers.UserSerializer",
+    },
+    "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
+    "ACTIVATION_URL": "activate/{uid}/{token}",
+}
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "AUTH_HEADERS_TYPES": ("Bearer", ),
+}
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': "E-commerce API",
+    'DESCRIPTION': "E-commerce backend API",
+    'VERSION': '1.0.0',
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@ecommerce.local'
+
