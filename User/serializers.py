@@ -54,10 +54,16 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "role", "is_staff", "joined_at")
 
 class UserCreateSerializer(DjoserUserCreateSerializer):
+    first_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
+
     class Meta(DjoserUserCreateSerializer.Meta):
         model = User
         fields = ("id", "email", "first_name", "last_name", "password", "confirm_password")
         read_only_fields = ("id",)
+    def perform_create(self, user):
+        user.is_active = False
+        user.save()
 
 class ChangePasswordSerializer(serializers.Serializer):
     first_password = serializers.CharField(write_only=True, required=True)

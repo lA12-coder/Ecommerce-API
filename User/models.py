@@ -59,7 +59,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.Customer)
     joined_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # last_login comes from AbstractBaseUser
     
     objects = CustomUserManager()
     REQUIRED_FIELDS = ['first_name', 'last_name']

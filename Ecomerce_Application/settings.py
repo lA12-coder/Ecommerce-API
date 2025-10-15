@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-
 from dotenv import load_dotenv
 load_dotenv()
 import os
@@ -63,6 +62,7 @@ INSTALLED_APPS = [
     'Cart.apps.CartConfig',
     'User.apps.UserConfig',
     'djoser',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -144,7 +144,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
@@ -160,23 +160,27 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 12,
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', "rest_framework.filters.SearchFilter", "rest_framework.filters.OrderingFilter"],
 }
 
 DJOSER = {
     "USER_CREATE_PASSWORD_RETYPE": True,
     "LOGIN_FIELD": "email",
     "USER_ID_FIELD": "id",
+    "ACTIVATION_URL": "activate/{uid}/{token}",
+    "SEND_ACTIVATION_EMAIL": True,
     "SERIALIZERS": {
         'user_create': "User.serializers.UserCreateSerializer",
         "user": "User.serializers.UserSerializer",
         "current_user": "User.serializers.UserSerializer",
     },
     "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
-    "ACTIVATION_URL": "activate/{uid}/{token}",
 }
 
 from datetime import timedelta
@@ -186,7 +190,6 @@ SIMPLE_JWT = {
     "AUTH_HEADERS_TYPES": ("Bearer", ),
 }
 
-
 SPECTACULAR_SETTINGS = {
     'TITLE': "E-commerce API",
     'DESCRIPTION': "E-commerce backend API",
@@ -194,5 +197,6 @@ SPECTACULAR_SETTINGS = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'noreply@ecommerce.local'
+DEFAULT_FROM_EMAIL = 'noreply@ethielcommerce.com'
+
 
