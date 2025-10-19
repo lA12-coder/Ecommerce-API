@@ -42,11 +42,11 @@ class VariantSerializer(serializers.ModelSerializer):
 
 
 class ProductListSerializer(serializers.ModelSerializer):
-    category  = CategorySerializer(read_only=True)
+    category  = CategorySerializer(read_only=True, many=True)
     images = ProductImageSerializer(read_only=True, many=True)
-    variant = VariantSerializer(read_only=True, many=True)
+    variants = VariantSerializer(read_only=True, many=True)
     class Meta:
         model = Product
-        fields = ("id","title", "sku", "description", "slug","price", "currency", "is_active", "category", "images","variant", "created_at", "updated_at")
-        read_only_fields = ("id", "sku", "slug", "created_at", "updates_at")
+        fields = ("id","title", "sku", "description", "slug","price", "currency", "is_active", "category", "images","variants", "created_at", "updated_at")
+        read_only_fields = ("id", "sku", "slug", "created_at", "updated_at")
 

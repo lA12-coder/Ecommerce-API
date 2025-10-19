@@ -1,4 +1,3 @@
-from attr.validators import max_len
 from django.db import models
 import uuid
 from django.utils.text import slugify
@@ -10,7 +9,7 @@ class Category(models.Model):
         verbose_name="ID",
         help_text="ID for Categories",
         editable=False,
-        default=uuid.uuid4(),
+        default=uuid.uuid4,
         primary_key=True,
     )
     name = models.CharField(max_length=100)
@@ -41,7 +40,7 @@ class Product(models.Model):
         verbose_name="product_id",
         help_text="ID for products",
         editable=False,
-        default=uuid.uuid4(),
+        default=uuid.uuid4,
         primary_key=True,
     )
     title = models.CharField(max_length=255)
@@ -51,7 +50,7 @@ class Product(models.Model):
     currency = models.CharField(max_length=20, default="USD")
     sku = models.CharField(max_length=120, unique=True)
     stock = models.PositiveIntegerField(default=0)
-    category = models.ManyToManyField(Category , related_name='categories')
+    category = models.ManyToManyField(Category , related_name='products')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -76,7 +75,7 @@ class Variant(models.Model):
     product variant eg: size/color.
     Each variant has its own SKU and stock.
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), verbose_name='variant_id', editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, verbose_name='variant_id', editable=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="variants")
     name = models.CharField(max_length=100, help_text="eg. 'size L / Red' ")
     sku = models.CharField(max_length=120, unique=True)
@@ -88,10 +87,10 @@ class Variant(models.Model):
         return self.price if self.price is not None else self.product.price
 
     def __str__(self):
-        return f"{self.product.titile} - {self.name}"
+        return f"{self.product.title} - {self.name}"
 
 class ProductImage(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), verbose_name='variant_id', editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, verbose_name='image_id', editable=False)
     product = models.ForeignKey(Product, related_name="images", on_delete=models.CASCADE)
     image = models.ImageField(upload_to="products/%Y/%m/%d/", )
     alt_text = models.CharField(max_length=255, blank=True)

@@ -8,11 +8,11 @@ from .serializer import ProductListSerializer, CategorySerializer, ProductImageS
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.prefetch_related("images", "variants").all()
+    queryset = Product.objects.prefetch_related("images", "variants", "category").all()
     serializer_class = ProductListSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    search_fields = ("title","category", "sku", "description")
+    search_fields = ("title","sku", "description", "category__name")
     ordering_fields = ("price", "created_at","title")
     parser_classes = (MultiPartParser, FormParser)
 
