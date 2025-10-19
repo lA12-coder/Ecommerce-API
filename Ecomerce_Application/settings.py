@@ -57,8 +57,6 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'Product.apps.ProductConfig',
     'Order.apps.OrderConfig',
-    'Payment.apps.PaymentConfig',
-    'Review.apps.ReviewConfig',
     'Cart.apps.CartConfig',
     'User.apps.UserConfig',
     'djoser',
@@ -100,8 +98,12 @@ WSGI_APPLICATION = 'Ecomerce_Application.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('DB_NAME', 'ecommerce_db'),
+        'USER': os.getenv('DB_USER', 'ecommerce_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'ecom_password'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),  
+        'PORT': os.getenv('DB_PORT', '3306'),
     }
         
 }
