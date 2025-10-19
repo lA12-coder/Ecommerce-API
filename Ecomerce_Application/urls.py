@@ -36,6 +36,10 @@ urlpatterns = [
     path('api/auth/', include('djoser.urls')),
     path('api/auth/', include('djoser.urls.jwt')),
     path('api/users/', include('User.urls'), name='users'),
+    
+    #Session Based Authentication for testing purposes
+    path('api/auth/session/', include('rest_framework.urls')),
+    
 
     # API schema and docs
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
