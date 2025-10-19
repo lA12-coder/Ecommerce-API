@@ -19,10 +19,20 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from .api_views import api_root, api_documentation, api_landing
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    # Landing page
+    path('', api_landing, name='api-landing'),
+    
+    # API Root and Documentation
+    path('api/', api_root, name='api-root'),
+    path('api/documentation/', api_documentation, name='api-documentation'),
+    
+    # Authentication
     path('api/auth/', include('djoser.urls')),
     path('api/auth/', include('djoser.urls.jwt')),
     path('api/users/', include('User.urls'), name='users'),
@@ -30,6 +40,8 @@ urlpatterns = [
     # API schema and docs
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    
+    # App endpoints
     path('api/', include('Product.urls')),
     path('api/cart/', include('Cart.urls')),
     path('api/orders/', include('Order.urls')),

@@ -44,6 +44,6 @@ class OrderItemAdmin(admin.ModelAdmin):
         'order', 'product', 'variant', 'quantity', 
         'unit_price', 'total_price'
     ]
-    list_filter = ['order__status', 'created_at']
+    list_filter = ['order__status']
     search_fields = ['order__order_number', 'product__title']
     readonly_fields = ['id', 'unit_price', 'total_price']
