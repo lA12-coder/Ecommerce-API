@@ -29,10 +29,25 @@ SECRET_KEY = os.getenv('SECRET_KEY') or 'dev-insecure-secret-key-change-me'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', '1') == '1'
 
-ALLOWED_HOSTS = [
-    os.getenv('ALLOWED_HOST', 'localhost'),
-    '127.0.0.1',
-]
+# Allow configuring allowed hosts via environment. Support a comma-separated
+# ALLOWED_HOSTS env var and also include Render's external host name if set.
+env_allowed = os.getenv('ALLOWED_HOSTS') or os.getenv('ALLOWED_HOST')
+if env_allowed:
+    # split comma-separated host list, strip whitespace, drop empties
+    ALLOWED_HOSTS = [h.strip() for h in env_allowed.split(',') if h.strip()]
+else:
+    ALLOWED_HOSTS = [
+        'localhost',
+        '127.0.0.1',
+        'https://ecommerce-api-cih7.onrender.com'
+    ]
+
+# When running on Render the platform exposes the hostname in RENDER_EXTERNAL_HOSTNAME
+# — include it automatically so the site won't return Bad Request (400) for that host.
+render_host = os.getenv('RENDER_EXTERNAL_HOSTNAME')
+if render_host:
+    if render_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(render_host)
 
 CORS_ALLOW_ALL_ORIGINS = True
 
